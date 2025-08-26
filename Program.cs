@@ -99,8 +99,8 @@ OPTIONS:
 
         var minified = minify ? "\x1b[1mminified\x1b[22m " : "";
         Console.WriteLine(
-                $"[\x1b[34mINFO\x1b[39m] Wrote \x1b[33m{total}\x1b[39m type definitions as \x1b[33m{namespaces.Keys.Count}\x1b[39m {minified}JSON files under "
-                + $"\x1b[4m\x1b]8;;file:///{outputDir}\x1b\\{outputDir}\x1b]8;;\x1b\\\x1b[0m"
+                $"[\x1b[34mINFO\x1b[39m] Wrote \x1b[33m{total}\x1b[39m type definitions as \x1b[33m{namespaces.Keys.Count}\x1b[39m {minified}JSON files under {outputDir}"
+                // + $"\x1b[4m\x1b]8;;file:///{outputDir}\x1b\\{outputDir}\x1b]8;;\x1b\\\x1b[0m"
         );
 
         return 0;
