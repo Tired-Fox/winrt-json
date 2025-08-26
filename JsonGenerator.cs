@@ -26,7 +26,6 @@ public sealed class MetadataJsonGenerator
         var tattrs = AttributeReader.ReadFactoryInfo(_r, handle);
         var jt = new JsonTypeDef
         {
-            AssemblyPath = Path.GetFileName(_ctx.FilePath),
             Namespace = _r.GetString(td.Namespace),
             Name = typeName,
             Factory = tattrs.FactoryInfo(),

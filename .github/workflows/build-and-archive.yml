@@ -42,7 +42,7 @@ jobs:
     - name: Run App (Release)
       run: |
         mkdir -p "${{ env.OUTPUT_DIR}}"
-        dotnet run --configuration Release --project "${{ env.PROJECT_PATH }}"
+        dotnet run --configuration Release --project "${{ env.PROJECT_PATH }}" -- --minify
 
     - name: Verify generated files exist
       run: |
