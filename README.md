@@ -4,7 +4,7 @@
 
 Each file is a namespace and the content is a list of `JsonTypeDef` objects. Look at `JsonModels.cs` for details on how the data is structured.
 
-## Types for generating bindings
+## Tips for generating langauge bindings
 
 ### Type Mappings
 
