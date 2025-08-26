@@ -1,5 +1,10 @@
 # WinRT Metadata Generator
 
+## Running Locally
+
+To run locally install `.Net` and run the command `dotnet run` or `dotnet run --minify`. This will generate the json files and put them
+in a new `output` directory.
+
 ## Types
 
 Each file is a namespace and the content is a list of `JsonTypeDef` objects. Look at `JsonModels.cs` for details on how the data is structured.
