@@ -78,16 +78,6 @@ public sealed class MetadataJsonGenerator
             foreach (var gpHandle in td.GetGenericParameters())
             {
                 var gp = _r.GetGenericParameter(gpHandle);
-                // var gpj = new JsonGenericParam { Name = _r.GetString(gp.Name) };
-                // List<JsonTypeReference> constraints = new();
-                // foreach (var c in gp.GetConstraints())
-                // {
-                //     var gc = _r.GetGenericParameterConstraint(c);
-                //     var t = ResolveTypeName(gc.Type, nameCtx);
-                //     if (t != null) constraints.Add(t);
-                // }
-                // if (constraints.Count > 0)
-                //     gpj.Constraints = constraints;
                 genericParams.Add(_r.GetString(gp.Name));
             }
             if (genericParams.Count > 0)
@@ -225,16 +215,6 @@ public sealed class MetadataJsonGenerator
                     foreach (var gpHandle in m.GetGenericParameters())
                     {
                         var gp = _r.GetGenericParameter(gpHandle);
-                        // var gpj = new JsonGenericParam { Name = _r.GetString(gp.Name) };
-                        // List<JsonTypeReference> constraints = new();
-                        // foreach (var c in gp.GetConstraints())
-                        // {
-                        //     var gc = _r.GetGenericParameterConstraint(c);
-                        //     var t = ResolveTypeName(gc.Type, nctx);
-                        //     if (t != null) constraints.Add(t);
-                        // }
-                        // if (constraints.Count > 0)
-                        //     gpj.Constraints = constraints;
                         generics.Add(_r.GetString(gp.Name));
                     }
                     if (generics.Count > 0)

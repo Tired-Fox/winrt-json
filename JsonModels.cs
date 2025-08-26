@@ -26,12 +26,6 @@ public sealed class JsonTypeDef
     public List<JsonEnumValues>? Values { get; set; } = null;
 }
 
-public class JsonGenericParam
-{
-    public string Name { get; set; } = "";
-    public List<JsonTypeReference>? Constraints { get; set; } = null;
-}
-
 public class JsonParameter
 {
     public string Name { get; set; } = "";
