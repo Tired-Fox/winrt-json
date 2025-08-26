@@ -8,7 +8,6 @@ public sealed class JsonFactoryInfo
 
 public sealed class JsonTypeDef
 {
-    public string? AssemblyPath { get; set; } = null;
     public string Kind { get; set; } = "Type"; // class|interface|struct|enum|delegate
     public string? Namespace { get; set; } = null;
     public string Name { get; set; } = default!;
