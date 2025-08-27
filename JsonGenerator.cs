@@ -47,25 +47,52 @@ public sealed class MetadataJsonGenerator
 
         // Interfaces
         {
-            List<string> interfaces = new();
+            List<JsonInterface> interfaces = new();
             foreach (var ih in td.GetInterfaceImplementations())
             {
                 var ii = _r.GetInterfaceImplementation(ih);
                 var hasDefault = ii.GetCustomAttributes()
                         .Select(a => MetadataHelpers.GetAttributeTypeName(_r, _r.GetCustomAttribute(a).Constructor))
                         .Any(n => n == "Windows.Foundation.Metadata.DefaultAttribute");
-                var name = ii.Interface.Kind switch
+
+                JsonInterface? ji = null;
+                switch (ii.Interface.Kind)
                 {
-                    HandleKind.TypeReference => _typeProvider.GetTypeFromReference(_r, (TypeReferenceHandle)ii.Interface, 0).Name,
-                    HandleKind.TypeDefinition => _typeProvider.GetTypeFromDefinition(_r, (TypeDefinitionHandle)ii.Interface, 0).Name,
-                    HandleKind.TypeSpecification => _typeProvider.GetTypeFromSpecification(_r, nameCtx, (TypeSpecificationHandle)ii.Interface, 0).Name,
-                    _ => null
-                };
+                    case HandleKind.TypeReference:
+                        {
+                            var tr = _typeProvider.GetTypeFromReference(_r, (TypeReferenceHandle)ii.Interface, 0);
+                            ji = new JsonInterface {
+                                Name = tr.Name,
+                                Namespace = tr.Namespace!,
+                            };
+                            break;
+                        }
+                    case HandleKind.TypeDefinition:
+                        {
+                            var ttd = _typeProvider.GetTypeFromDefinition(_r, (TypeDefinitionHandle)ii.Interface, 0);
+                            ji = new JsonInterface {
+                                Name = ttd.Name,
+                                Namespace = ttd.Namespace!,
+                            };
+                            break;
+                        }
+                    case HandleKind.TypeSpecification:
+                        {
+                            var ts = _typeProvider.GetTypeFromSpecification(_r, nameCtx, (TypeSpecificationHandle)ii.Interface, 0);
+                            ji = new JsonInterface {
+                                Name = ts.Name,
+                                Namespace = ts.Namespace!,
+                            };
+                            break;
+                        }
+                    default:
+                        throw new NotSupportedException($"Unexpected handle kind: {ii.Interface.Kind}");
+                }
 
                 if (hasDefault) {
-                    jt.DefaultInterface = name;
+                    jt.DefaultInterface = ji;
                 }
-                if (!string.IsNullOrEmpty(name)) interfaces.Add(name!);
+                if (ji != null) interfaces.Add(ji);
             }
             if (interfaces.Count > 0)
                 jt.Interfaces = interfaces;

@@ -1,9 +1,9 @@
 using System.Reflection.Metadata;
 
 public sealed class Attributes {
-    public List<string> Factories { get; set; } = new();
-    public List<string> Statics { get; set; } = new();
-    public List<string> Composable { get; set; } = new();
+    public List<JsonInterface> Factories { get; set; } = new();
+    public List<JsonInterface> Statics { get; set; } = new();
+    public List<JsonInterface> Composable { get; set; } = new();
     public bool HasDefaultActivation { get; set; }
     public bool Agile { get; set; }
 
@@ -42,7 +42,11 @@ public static class AttributeReader
                         if (cav.FixedArguments.Length > 0 && IsSystemTypeArg(cav.FixedArguments[0]))
                         {
                             var factoryTypeName = (string)cav.FixedArguments[0].Value!;
-                            attrs.Factories.Add(StripAssembly(factoryTypeName));
+                            var (ns, name) = SplitNamespace(StripAssembly(factoryTypeName));
+                            attrs.Factories.Add(new JsonInterface {
+                                Name = name,
+                                Namespace = ns,
+                            });
                         }
                         else
                         {
@@ -58,7 +62,11 @@ public static class AttributeReader
                         if (cav.FixedArguments.Length > 0 && IsSystemTypeArg(cav.FixedArguments[0]))
                         {
                             var staticsTypeName = (string)cav.FixedArguments[0].Value!;
-                            attrs.Statics.Add(StripAssembly(staticsTypeName));
+                            var (ns, name) = SplitNamespace(StripAssembly(staticsTypeName));
+                            attrs.Statics.Add(new JsonInterface {
+                                Name = name,
+                                Namespace = ns,
+                            });
                         }
                         break;
                     }
@@ -79,7 +87,11 @@ public static class AttributeReader
                         if (cav.FixedArguments.Length > 0 && IsSystemTypeArg(cav.FixedArguments[0]))
                         {
                             var factoryTypeName = (string)cav.FixedArguments[0].Value!;
-                            attrs.Composable.Add(StripAssembly(factoryTypeName));
+                            var (ns, name) = SplitNamespace(StripAssembly(factoryTypeName));
+                            attrs.Composable.Add(new JsonInterface {
+                                Name = name,
+                                Namespace = ns,
+                            });
                         }
                         break;
                     }
@@ -98,6 +110,16 @@ public static class AttributeReader
             //  "Windows.UI.Notifications.IToastNotificationFactory, Windows, Version=..."
             var comma = serializedName.IndexOf(',');
             return comma >= 0 ? serializedName[..comma] : serializedName;
+        }
+
+        static (string ns, string name) SplitNamespace(string serializedName)
+        {
+            var idx = serializedName.LastIndexOf('.');
+            if (idx != -1) {
+                return (ns: serializedName[..idx], name: serializedName[(idx + 1)..]);
+            } else {
+                return (ns: "", name: serializedName);
+            }
         }
     }
 

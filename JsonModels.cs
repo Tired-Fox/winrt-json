@@ -1,9 +1,15 @@
 public sealed class JsonFactoryInfo
 {
-    public List<string>? Interfaces { get; set; } = null; // fully-qualified names, e.g. Windows.UI.Notifications.IToastNotificationFactory
-    public List<string>? Statics { get; set; } = null;    // e.g. Windows.UI.Notifications.IToastNotificationManagerStatics2
-    public List<string>? Composable { get; set; } = null; // from [Composable]
+    public List<JsonInterface>? Interfaces { get; set; } = null; // fully-qualified names, e.g. Windows.UI.Notifications.IToastNotificationFactory
+    public List<JsonInterface>? Statics { get; set; } = null;    // e.g. Windows.UI.Notifications.IToastNotificationManagerStatics2
+    public List<JsonInterface>? Composable { get; set; } = null; // from [Composable]
     public bool HasDefault { get; set; }                  // use IActivationFactory if true
+}
+
+public sealed class JsonInterface
+{
+    public string Name { get; set; } = default!;
+    public string Namespace { get; set; } = default!;
 }
 
 public sealed class JsonTypeDef
@@ -16,8 +22,8 @@ public sealed class JsonTypeDef
     public JsonTypeReference? BaseType { get; set; } = null;
     public List<string>? GenericParameters { get; set; } = null;
     public JsonFactoryInfo? Factory { get; set; } = null;
-    public string? DefaultInterface { get; set; } = null;
-    public List<string>? Interfaces { get; set; } = null;
+    public JsonInterface? DefaultInterface { get; set; } = null;
+    public List<JsonInterface>? Interfaces { get; set; } = null;
     public List<JsonField>? Fields { get; set; } = null;
     public List<JsonProperty>? Properties { get; set; } = null;
     public List<JsonEvent>? Events { get; set; } = null;
@@ -28,7 +34,7 @@ public sealed class JsonTypeDef
 public class JsonParameter
 {
     public string Name { get; set; } = "";
-    public JsonTypeReference Type { get; set; } = null!;
+    public JsonTypeReference Type { get; set; } = default!;
     public List<string>? Attributes { get; set; } = null;
 }
 
@@ -38,26 +44,26 @@ public class JsonMethod
     public bool Static { get; set; }
     public List<string>? GenericParameters { get; set; } = null;
     public List<JsonParameter>? Parameters { get; set; } = null;
-    public JsonTypeReference ReturnType { get; set; } = null!;
+    public JsonTypeReference ReturnType { get; set; } = default!;
 }
 
 public class JsonProperty
 {
     public string Name { get; set; } = "";
-    public JsonTypeReference Type { get; set; } = null!;
+    public JsonTypeReference Type { get; set; } = default!;
     public List<string>? Accessors { get; set; } = null;
 }
 
 public class JsonEvent
 {
     public string Name { get; set; } = "";
-    public JsonTypeReference HandlerType { get; set; } = null!;
+    public JsonTypeReference HandlerType { get; set; } = default!;
 }
 
 public class JsonField
 {
     public string Name { get; set; } = "";
-    public JsonTypeReference Type { get; set; } = null!;
+    public JsonTypeReference Type { get; set; } = default!;
     public string? Value { get; set; } = null;
 }
 
@@ -69,6 +75,6 @@ public class JsonTypeReference
     public List<JsonTypeReference>? GenericArguments { get; set; } = null;
 }
 public sealed class JsonEnumValues {
-    public string Name { get; set; } = null!;
+    public string Name { get; set; } = default!;
     public Int32 Value { get; set; } = 0;
 }
