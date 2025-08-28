@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 
@@ -62,6 +63,7 @@ public class TypeNameProvider : ISignatureTypeProvider<JsonTypeReference, NameCo
         return new JsonTypeReference
         {
             Name = typeName,
+			Kind = GetKindFromHandle(reader, handle),
             Namespace = reader.GetString(td.Namespace),
         };
     }
@@ -75,6 +77,7 @@ public class TypeNameProvider : ISignatureTypeProvider<JsonTypeReference, NameCo
         return new JsonTypeReference
         {
             Name = typeName,
+			Kind = GetKindFromHandle(reader, handle),
             Namespace = reader.GetString(tr.Namespace),
         };
     }
@@ -94,19 +97,19 @@ public class TypeNameProvider : ISignatureTypeProvider<JsonTypeReference, NameCo
 
     public JsonTypeReference GetArrayType(JsonTypeReference elementType, ArrayShape shape)
     {
-        elementType.Kind = "Array";
+        elementType.Type = "Array";
         return elementType;
     }
 
     public JsonTypeReference GetPointerType(JsonTypeReference elementType)
     {
-        elementType.Kind = "Pointer";
+        elementType.Type = "Pointer";
         return elementType;
     }
 
     public JsonTypeReference GetByReferenceType(JsonTypeReference elementType)
     {
-        elementType.Kind = "Reference";
+        elementType.Type = "Ref";
         return elementType;
     }
 
@@ -130,7 +133,7 @@ public class TypeNameProvider : ISignatureTypeProvider<JsonTypeReference, NameCo
 
     public JsonTypeReference GetSZArrayType(JsonTypeReference elementType)
     {
-        elementType.Kind = "Array";
+        elementType.Type = "Array";
         return elementType;
     }
 
@@ -140,6 +143,61 @@ public class TypeNameProvider : ISignatureTypeProvider<JsonTypeReference, NameCo
         var blobReader = reader.GetBlobReader(spec.Signature);
         var decoder = new SignatureDecoder<JsonTypeReference, NameContext>(this, reader, genericContext);
         return decoder.DecodeType(ref blobReader);
+    }
+
+	// helper
+    private string GetKindFromHandle(MetadataReader reader, EntityHandle handle)
+    {
+		switch (handle.Kind)
+		{
+			case HandleKind.TypeDefinition:
+			{
+				var td = reader.GetTypeDefinition((TypeDefinitionHandle)handle);
+				var attrs = td.Attributes;
+
+				if ((attrs & System.Reflection.TypeAttributes.Interface) != 0)
+					return "Interface";
+
+				if ((attrs & System.Reflection.TypeAttributes.Class) != 0)
+				{
+					if ((attrs & System.Reflection.TypeAttributes.Sealed) != 0 &&
+						(attrs & System.Reflection.TypeAttributes.Abstract) != 0)
+					{
+						// Heuristic: in metadata, System.Enum and System.ValueType
+						// are sealed + abstract special types.
+						var name = reader.GetString(td.Name);
+						if (name == "Enum") return "Enum";
+						if (name == "ValueType") return "Struct";
+						if (name.EndsWith("Delegate")) return "Delegate"; // heuristic
+					}
+
+					return "Class";
+				}
+
+				return null;
+			}
+
+			case HandleKind.TypeReference:
+			{
+				var tr = reader.GetTypeReference((TypeReferenceHandle)handle);
+				string ns = reader.GetString(tr.Namespace);
+				string name = reader.GetString(tr.Name);
+
+				if (ns == "System" && name == "Enum")
+					return "Enum";
+				if (ns == "System" && name == "ValueType")
+					return "Struct";
+				if (name.EndsWith("Delegate"))
+					return "Delegate";
+				if (ns == "System" && name == "MulticastDelegate")
+					return "Delegate";
+
+				return null;
+			}
+
+			default:
+				return null;
+		}
     }
 }
 

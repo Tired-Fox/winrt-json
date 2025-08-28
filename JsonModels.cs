@@ -69,7 +69,8 @@ public class JsonField
 
 public class JsonTypeReference
 {
-    public string? Kind { get; set; } = null;
+    public string? Kind { get; set; } = null; // Generic, Delegate, Native, Class, Struct, Interface, Enum
+    public string? Type { get; set; } = null; // Array, Pointer, Ref
     public string? Namespace { get; set; } = null;
     public string Name { get; set; } = "";
     public List<JsonTypeReference>? GenericArguments { get; set; } = null;
