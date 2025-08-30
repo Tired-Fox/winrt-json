@@ -10,6 +10,7 @@ public sealed class JsonInterface
 {
     public string Name { get; set; } = default!;
     public string Namespace { get; set; } = default!;
+	public List<JsonTypeReference>? GenericArguments { get; set; } = default!;
 }
 
 public sealed class JsonTypeDef
@@ -69,7 +70,7 @@ public class JsonField
 
 public class JsonTypeReference
 {
-    public string? Kind { get; set; } = null; // Generic, Delegate, Native, Class, Struct, Interface, Enum
+    public string? Kind { get; set; } = null; // Generic, Delegate, Native, Class, Struct, Interface, Enum, Function
     public string? Type { get; set; } = null; // Array, Pointer, Ref
     public string? Namespace { get; set; } = null;
     public string Name { get; set; } = "";

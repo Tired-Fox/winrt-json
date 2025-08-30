@@ -46,7 +46,8 @@ public class TypeNameProvider : ISignatureTypeProvider<JsonTypeReference, NameCo
         return new JsonTypeReference
         {
             Name = "fnptr",
-            Kind = "FunctionPointer",
+            Kind = "Function",
+			Type = "Pointer",
             GenericArguments = new List<JsonTypeReference>()
             {
                 signature.ReturnType

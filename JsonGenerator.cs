@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Text.Json;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
@@ -78,10 +79,17 @@ public sealed class MetadataJsonGenerator
                         }
                     case HandleKind.TypeSpecification:
                         {
-                            var ts = _typeProvider.GetTypeFromSpecification(_r, nameCtx, (TypeSpecificationHandle)ii.Interface, 0);
+							var typeSpec = _r.GetTypeSpecification((TypeSpecificationHandle)ii.Interface);
+        					var blob = _r.GetBlobReader(typeSpec.Signature);
+
+        					// Decode with a provider
+                        	var decoder = new SignatureDecoder<JsonTypeReference, NameContext>(_typeProvider, _r, nameCtx);
+        					var decoded = decoder.DecodeType(ref blob);
+
                             ji = new JsonInterface {
-                                Name = ts.Name,
-                                Namespace = ts.Namespace!,
+                                Name = decoded.Name,
+                                Namespace = decoded.Namespace!,
+								GenericArguments = decoded.GenericArguments,
                             };
                             break;
                         }
